@@ -18,10 +18,10 @@ public class main {
 	{
 		//Creating PDF document object   
         //PDDocument doc = new PDDocument();      
-        PDDocument doc = apriPDF("./asd.pdf");
+        //PDDocument doc = apriPDF("./asd.pdf");
         
-        getMiniature(doc);
-        close(doc);
+        //getMiniature(doc);
+        //close(doc);
 
         
         /*PDPage blankPage = new PDPage();  
@@ -37,33 +37,64 @@ public class main {
         //Closing the document    
         close(doc); */ 
 	}
-	public static void getMiniature(PDDocument doc) throws IOException
+	public main()
+	{
+		
+	}
+	public static void getMiniature(PDDocument doc) 
 	{
 		PDFRenderer renderer = new PDFRenderer(doc);
 		int i = getPageNumber(doc);
 		for(int j = 0; j < i; j++)
 		{
-        BufferedImage image = renderer.renderImage(j);
-        ImageIO.write(image, "JPEG", new File("./miniature/"+String.valueOf(j)+".jpg"));
+        BufferedImage image = null;
+		try {
+			image = renderer.renderImage(j);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        try {
+			ImageIO.write(image, "JPEG", new File("./miniature/"+String.valueOf(j)+".jpg"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		}
 	}
 	
-	public static PDDocument apriPDF(String path) throws IOException
+	public static PDDocument openPDF(String path) 
 	{
 		//Loading an existing document   
         File file = new File(path);   
-        PDDocument doc = PDDocument.load(file); 
+        PDDocument doc = null;
+		try {
+			doc = PDDocument.load(file);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
         return doc;
 	}
 	
-	public static void save(String path, PDDocument doc) throws IOException
+	public static void save(String path, PDDocument doc) 
 	{
-		doc.save(path);
+		try {
+			doc.save(path);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
-	public static void close(PDDocument doc) throws IOException
+	public static void close(PDDocument doc)
 	{
-        doc.close();  
+        try {
+			doc.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 	}
 	
 	public static int getPageNumber(PDDocument doc)
@@ -77,23 +108,39 @@ public class main {
 
 	}
 	
-	public static List<PDDocument> splitPDF(PDDocument doc) throws IOException
+	public static List<PDDocument> splitPDF(PDDocument doc) 
 	{
 		Splitter splitter = new Splitter();
-		List<PDDocument> Pages = splitter.split(doc);
+		List<PDDocument> Pages = null;
+		try {
+			Pages = splitter.split(doc);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return Pages;
 	}
 	
 	
-	public static void mergePDF(String pathDestination, PDDocument doc, File[] files) throws IOException
+	public static void mergePDF(String pathDestination, PDDocument doc, File[] files)
 	{
 		PDFMergerUtility PDFmerger = new PDFMergerUtility();
 		PDFmerger.setDestinationFileName(pathDestination);
 		for(int i=0; i < files.length; i++)
 		{
-			PDFmerger.addSource(files[i]);
+			try {
+				PDFmerger.addSource(files[i]);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-	    PDFmerger.mergeDocuments();
+	    try {
+			PDFmerger.mergeDocuments();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 
 	}
