@@ -15,13 +15,19 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+
 import javax.swing.JScrollBar;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Gui {
 
 	private JFrame frame;
+	int clicks = 0;
 
 	/**
 	 * Launch the application.
@@ -51,23 +57,34 @@ public class Gui {
 	 */
 	private void initialize() {
 		frame = new JFrame();
+		
 		frame.setBounds(100, 100, 900, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JPanel grid = new JPanel();
+		
 		grid.setBounds(10, 49, 866, 604);
 		frame.getContentPane().add(grid);
 		
 		
 		//apro pdf
 		main pdf = new main();
+		
+		//documento nuovo riordinato
+		PDDocument newpdf = new PDDocument();
+		
 		PDDocument p = pdf.openPDF("./asd.pdf");
 		int i = main.getPageNumber(p);
 		main.getMiniature(p);
+		List<PDDocument> pagine = (List<PDDocument>)main.splitPDF(p);
 		
 		int row= (i/3);
 		grid.setLayout(new GridLayout(row, 3, 0, 0));
+		
+		JLabel label = new JLabel("New label");
+		label.setBounds(25, 10, 45, 13);
+		frame.getContentPane().add(label);
 		
 		
 		
@@ -82,10 +99,16 @@ public class Gui {
 			button.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					String id = e.getComponent().getName();
-					JOptionPane.showMessageDialog(frame, String.valueOf(id));
+					int numpage = Integer.valueOf(e.getComponent().getName());
+					clicks += e.getClickCount();
+					e.getComponent().disable();
+					label.setText(String.valueOf(clicks));
+					//if(clicks <= i)
+					newpdf.addPage(pagine.get(numpage).getPage(0));
+					
 				}
 			});
+			
 			JLabel lblNewLabel = 
 			new JLabel(new ImageIcon(((new ImageIcon(
 					"./miniature/"+String.valueOf(j)+".jpg").getImage()
@@ -96,8 +119,24 @@ public class Gui {
 			grid.add(button);
 		}
 		
-		
-		main.close(p);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosed(WindowEvent e) {
+				
+				main.save("./ris.pdf", newpdf);
+				main.close(newpdf);
+				main.close(p);
+			}
+			@Override
+			public void windowClosing(WindowEvent e) {
+				main.save("./ris.pdf", newpdf);
+				main.close(newpdf);
+				main.close(p);
+			}
+		});
+		//main.save("./ris.pdf", newpdf);
+		//main.close(newpdf);
+		//main.close(p);
 		
 	}
 }
