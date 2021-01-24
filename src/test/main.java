@@ -56,6 +56,7 @@ public class main {
 		}
         try {
 			ImageIO.write(image, "JPEG", new File("./miniature/"+String.valueOf(j)+".jpg"));
+			System.out.println(String.valueOf(j)+".jpg salvata");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
