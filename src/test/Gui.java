@@ -20,13 +20,16 @@ import java.util.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Paths;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Button;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 
 public class Gui {
 
-	private JFrame frame;
+	static JFrame frmPdfreorder;
 	static int clicks, i = 0;
 	static String path = "";
 	static String pathsave = "";
@@ -34,6 +37,7 @@ public class Gui {
 	static PDDocument p;
 	static PDDocument newpdf;
 	static JPanel grid = new JPanel();;
+	static JScrollPane panelPane = new JScrollPane();
 	
 
 	/**
@@ -44,7 +48,7 @@ public class Gui {
 			public void run() {
 				try {
 					Gui window = new Gui();
-					window.frame.setVisible(true);
+					window.frmPdfreorder.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -68,36 +72,92 @@ public class Gui {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
+		frmPdfreorder = new JFrame();
+		frmPdfreorder.setResizable(false);
+		frmPdfreorder.setTitle("PDFReorder");
+		frmPdfreorder.setIconImage(new ImageIcon("./download.jfif").getImage());
 		
-		frame.setBounds(100, 100, 900, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
+		frmPdfreorder.setBounds(100, 100, 1079, 750);
+		frmPdfreorder.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frmPdfreorder.getContentPane().setLayout(null);
 		
 		//JPanel grid = new JPanel();
 		
-		grid.setBounds(10, 49, 866, 604);
-		frame.getContentPane().add(grid);
 		
-		Button button_1 = new Button("Start");
+		
+		grid.setBounds(10, 49, 1000, 604);
+		JScrollPane panelPane = new JScrollPane(grid);
+		grid.setLayout(new GridLayout(1, 0, 0, 0));
+				panelPane.setBounds(10, 64, 1045, 604);
+		frmPdfreorder.getContentPane().add(panelPane);
+		
+		JButton button_1 = new JButton("Start");
 		button_1.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				mostra();
 			}
 		});
-		button_1.setBounds(52, 0, 90, 38);
-		frame.getContentPane().add(button_1);
+		button_1.setBounds(10, 10, 150, 38);
+		frmPdfreorder.getContentPane().add(button_1);
+		
+		JButton btnNewButton = new JButton("Export");
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				main.save(pathsave, newpdf);
+				System.out.println("pdf salvato in "+ pathsave);
+				main.close(newpdf);
+				main.close(p);
+				JOptionPane.showMessageDialog(frmPdfreorder, "Il PDF è stato salvato!");
+
+
+			}
+		});
+		btnNewButton.setBounds(186, 10, 150, 38);
+		frmPdfreorder.getContentPane().add(btnNewButton);
 		
 		
 		
 		
 		
 		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
+		frmPdfreorder.setJMenuBar(menuBar);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Open");
 		menuBar.add(mntmNewMenuItem);
+		
+		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Save");
+		menuBar.add(mntmNewMenuItem_1);
+		mntmNewMenuItem_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			
+				JFileChooser fileChooser = new JFileChooser();
+	            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	            int option = fileChooser.showOpenDialog(frmPdfreorder);
+	            if(option == JFileChooser.APPROVE_OPTION){
+	               File file = fileChooser.getSelectedFile();
+	               pathsave = file.getPath();
+	               System.out.println(pathsave);
+	            }
+	            pathsave = pathsave+"\\Export.pdf";
+				
+				/*
+				JFileChooser f = new JFileChooser();
+		        f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
+		        f.showSaveDialog(null);
+		        
+
+		        pathsave = String.valueOf(f.getCurrentDirectory());
+		        //pathsave = pathsave+"\\Desktop\\Export.pdf";
+		        String userDirectory = Paths.get("")
+		                .toAbsolutePath()
+		                .toString();
+		        System.out.println(userDirectory);
+		        */
+			}
+		});
 		mntmNewMenuItem.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -118,35 +178,19 @@ public class Gui {
 			
 		});
 		
-		JMenuItem mntmNewMenuItem_1 = new JMenuItem("Save");
-		mntmNewMenuItem_1.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-			
-				JFileChooser f = new JFileChooser();
-		        f.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY); 
-		        f.showSaveDialog(null);
-
-		        pathsave = String.valueOf(f.getCurrentDirectory());
-		        pathsave = pathsave+"\\ris.pdf";
-		        //System.out.println(f.getSelectedFile());
-			}
-		});
-		menuBar.add(mntmNewMenuItem_1);
 		
 		
 		
 		
 		
-		
-		frame.addWindowListener(new WindowAdapter() {
+		frmPdfreorder.addWindowListener(new WindowAdapter() {
 			
 			@Override
 			public void windowClosing(WindowEvent e) {
-				main.save(pathsave, newpdf);
-				main.close(newpdf);
-				main.close(p);
-				System.out.println("pdf salvato in "+ pathsave);
+				
+				
+				
+				
 			}
 		});
 		//main.save("./ris.pdf", newpdf);
@@ -175,8 +219,15 @@ public class Gui {
 		main.getMiniature(p);
 		List<PDDocument> pagine = (List<PDDocument>)main.splitPDF(p);
 		
-		int row= (i/3);
-		grid.setLayout(new GridLayout(row, 3, 0, 0));
+		int row;
+		if((i/2)%2==0)
+			row= (i/2);
+		else
+			row = (i/2)+1;
+		grid.setLayout(new GridLayout(0, 3, 5, 5));
+		//grid.setSize(500, 500);
+		
+		
 		
 		
 		
@@ -185,6 +236,9 @@ public class Gui {
 			
 			button = new JButton();
 			button.setName(String.valueOf(j));
+			//button.setPreferredSize(new Dimension(70, 70));
+			button.setMinimumSize(new Dimension(Integer.MAX_VALUE,Integer.MAX_VALUE));
+			button.setBackground(null);
 			button.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
@@ -206,16 +260,17 @@ public class Gui {
 			JLabel lblNewLabel = 
 			new JLabel(new ImageIcon(((new ImageIcon(
 					"./miniature/"+String.valueOf(j)+".jpg").getImage()
-		            .getScaledInstance(70, 70,
+		            .getScaledInstance(300, 600,
 		                    java.awt.Image.SCALE_FAST)))));
 			button.add(lblNewLabel);
+			
 			
 			grid.add(button);
 		}
 	
 		grid.setVisible(true);
-		grid.revalidate();
-		
+		//grid.revalidate();
+		frmPdfreorder.revalidate();
 	
 		
 	
