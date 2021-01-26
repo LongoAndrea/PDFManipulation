@@ -41,8 +41,13 @@ public class main {
 	{
 		
 	}
-	public static void getMiniature(PDDocument doc) 
+	public static void getMiniature(PDDocument doc,String path) 
 	{
+		
+		File theDir = new File(path);
+		if (!theDir.exists()){
+		    theDir.mkdirs();
+		}
 		PDFRenderer renderer = new PDFRenderer(doc);
 		int i = getPageNumber(doc);
 		for(int j = 0; j < i; j++)
@@ -55,7 +60,7 @@ public class main {
 			e.printStackTrace();
 		}
         try {
-			ImageIO.write(image, "JPEG", new File("./miniature/"+String.valueOf(j)+".jpg"));
+			ImageIO.write(image, "JPEG", new File(path+"\\"+String.valueOf(j)+".jpg"));
 			System.out.println(String.valueOf(j)+".jpg salvata");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

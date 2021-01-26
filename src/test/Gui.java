@@ -1,5 +1,6 @@
 package test;
 
+
 import java.awt.EventQueue;
 
 import javax.swing.*;
@@ -32,7 +33,7 @@ public class Gui {
 	static JFrame frmPdfreorder;
 	static int clicks, i = 0;
 	static String path = "";
-	static String pathsave = "";
+	static String pathsave, pathfolderwork = "";
 	List<PDDocument> pagine=null;
 	static PDDocument p;
 	static PDDocument newpdf;
@@ -139,6 +140,7 @@ public class Gui {
 	            if(option == JFileChooser.APPROVE_OPTION){
 	               File file = fileChooser.getSelectedFile();
 	               pathsave = file.getPath();
+	               pathfolderwork = pathsave+"\\miniature";
 	               System.out.println(pathsave);
 	            }
 	            pathsave = pathsave+"\\Export.pdf";
@@ -187,9 +189,12 @@ public class Gui {
 			
 			@Override
 			public void windowClosing(WindowEvent e) {
-				
-				
-				
+				try
+				{
+				deleteFolder(new File(pathfolderwork));
+				}
+				catch(Exception a) {}
+				finally {}
 				
 			}
 		});
@@ -204,6 +209,17 @@ public class Gui {
 		}
 	}
 	
+	public static void deleteFolder(File file){
+	      for (File subFile : file.listFiles()) {
+	         if(subFile.isDirectory()) {
+	            deleteFolder(subFile);
+	         } else {
+	            subFile.delete();
+	         }
+	      }
+	      file.delete();
+	}
+	
 	public static void mostra()
 	{
 		//apro pdf
@@ -216,7 +232,7 @@ public class Gui {
 		
 		p = test.main.openPDF(path);
 		i = main.getPageNumber(p);
-		main.getMiniature(p);
+		main.getMiniature(p,pathfolderwork);
 		List<PDDocument> pagine = (List<PDDocument>)main.splitPDF(p);
 		
 		int row;
@@ -259,7 +275,7 @@ public class Gui {
 			
 			JLabel lblNewLabel = 
 			new JLabel(new ImageIcon(((new ImageIcon(
-					"./miniature/"+String.valueOf(j)+".jpg").getImage()
+					pathfolderwork+"\\"+String.valueOf(j)+".jpg").getImage()
 		            .getScaledInstance(300, 600,
 		                    java.awt.Image.SCALE_FAST)))));
 			button.add(lblNewLabel);
